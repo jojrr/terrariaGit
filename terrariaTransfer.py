@@ -29,17 +29,24 @@ def getFileList(type:str, device:str):
     if type == "player":
 
         playersList = []
+        playersListRaw = []
         
         if device == "android":
-           playersListRaw = (subprocess.check_output([adb_path, "shell", "ls", android_player_folder], text=True)).strip().split("\n")
+            try:
+                playersListRaw = (subprocess.check_output([adb_path, "shell", "ls", android_player_folder], text=True)).strip().split("\n")
+            except:
+                print("error no mobile files found")
+                return
             
         elif device == "pc":
-            playersListRaw = list(file.name for file in os.scandir(pc_player_folder) if file.is_file())
+            try:
+                playersListRaw = list(file.name for file in os.scandir(pc_player_folder) if file.is_file())
+            except:
+                print("error no pc files found")
+                return 
 
         for i in playersListRaw:
-            if ".plr.bak" in i:
-                continue
-            if ".plr" in i:
+            if i[-4:] == ".plr": 
                 playersList.append(i)
 
         return playersList
@@ -47,17 +54,24 @@ def getFileList(type:str, device:str):
     if type == "world":
         
         worldsList = []
+        worldsListRaw = []
         
         if device == "android":
-            worldsListRaw = (subprocess.check_output([adb_path, "shell", "ls", android_world_folder], text=True)).strip().split("\n") 
+            try:
+                worldsListRaw = (subprocess.check_output([adb_path, "shell", "ls", android_world_folder], text=True)).strip().split("\n") 
+            except:
+                print("error no mobile files found")
+                return
 
         elif device == "pc":
-            worldsListRaw = list(file.name for file in os.scandir(pc_world_folder) if file.is_file())
+            try: 
+                worldsListRaw = list(file.name for file in os.scandir(pc_world_folder) if file.is_file())
+            except:
+                print("error no pc files found")
+                return 
 
         for i in worldsListRaw:
-            if ".wld.bak" in i:
-                continue
-            if ".wld" in i:
+            if i[-4:] == ".wld":
                 worldsList.append(i)
         
         return worldsList
@@ -117,6 +131,8 @@ def commit(targetData:str, pcFolder:str, androidFolder:str, type:str):
 
 def displayFiles(index: int, operation: str, type: str):
 
+    fileList = None
+
     if operation == "fetch":
         
         if type == "world":
@@ -145,27 +161,30 @@ def displayFiles(index: int, operation: str, type: str):
             print("PC Players:\n")
             
             fileList = getFileList(type, device="pc")
-
-    totalPages = len(fileList)//10
-
-    targetDataIndex = printList(fileList, index, operation, totalPages, type)
     
-    targetData = fileList[targetDataIndex]
+    if fileList != None:
 
-    if operation == "fetch":
-        if type == "world":
-            fetch(targetData, android_world_folder, pc_world_folder, type)
+        totalPages = len(fileList)//10
 
-        elif type == "player":
-            fetch(targetData, android_player_folder, pc_player_folder, type)
-
-    elif operation == "commit":
-        if type == "world":
-            commit(targetData, pc_world_folder, android_world_folder, type)
-
-        elif type == "player":
-            commit(targetData, pc_player_folder, android_player_folder, type)
+        targetDataIndex = printList(fileList, index, operation, totalPages, type)
         
+        targetData = fileList[targetDataIndex]
+
+        if operation == "fetch":
+            if type == "world":
+                fetch(targetData, android_world_folder, pc_world_folder, type)
+
+            elif type == "player":
+                fetch(targetData, android_player_folder, pc_player_folder, type)
+
+        elif operation == "commit":
+            if type == "world":
+                commit(targetData, pc_world_folder, android_world_folder, type)
+
+            elif type == "player":
+                commit(targetData, pc_player_folder, android_player_folder, type)
+    else:
+        return 
 
 def printList(fileList:list, index:int, operation:str, totalPages:int, type:str) -> int:
 
@@ -207,15 +226,16 @@ def printList(fileList:list, index:int, operation:str, totalPages:int, type:str)
         else:
             try:
                 targetDataIndex = int(userInpt) + index
+                ran = True
             except ValueError:
                 print("Please enter a valid number. ")
                 continue
 
             if (targetDataIndex > len(fileList)-1):
-                targetDataIndex = input("Please enter a valid number. ")
+                print("Please enter a valid number. ")
+                continue
             
-            ran = True
-            return targetDataIndex
+        return targetDataIndex
 
 
 def main():

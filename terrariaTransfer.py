@@ -2,12 +2,12 @@ import os
 import subprocess
 
 
-pc_player_folder = r"C:\Users\bluei\Documents\My Games\Terraria\Players"  # base PC folder
-android_player_folder = "/sdcard/Android/data/com.and.games505.TerrariaPaid/Players" # android base folder
-pc_world_folder = r"C:\Users\bluei\Documents\My Games\Terraria\Worlds"  # worlds PC folder
+pc_player_folder = r"C:\Users\username\Documents\My Games\Terraria\Players"  # player PC folder - replace with path to player folder
+android_player_folder = "/sdcard/Android/data/com.and.games505.TerrariaPaid/Players" # android player folder
+pc_world_folder = r"C:\Users\username\Documents\My Games\Terraria\Worlds"  # worlds PC folder - replace with path to worlds folder
 android_world_folder = "/sdcard/Android/data/com.and.games505.TerrariaPaid/Worlds" # android worlds folder
 
-adb_path = r"C:\Users\bluei\AppData\Local\Programs\Python\Python313\Lib\site-packages\adbutils\binaries\adb.exe"
+adb_path = r"C:\Users\usernamw\AppData\Local\Programs\Python\Python313\Lib\site-packages\adbutils\binaries\adb.exe" # path to adb exe
 
 def adb_pull(android_path: str, pc_path: str):
     try:
